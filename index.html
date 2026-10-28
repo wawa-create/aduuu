@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102b46">
+  <title>TransferCheck — Pemeriksaan Bukti Transfer</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">TC</div>
+      <div><strong>TransferCheck</strong><small>Document Review Workspace</small></div>
+    </div>
+    <div class="workspace-label">WORKSPACE</div>
+    <nav class="nav">
+      <button class="nav-item active" data-page="dashboard"><span>▦</span> Dashboard</button>
+      <button class="nav-item" data-page="pemeriksaan"><span>▤</span> Pemeriksaan bukti</button>
+      <button class="nav-item" data-page="riwayat"><span>◷</span> Riwayat pemeriksaan</button>
+      <button class="nav-item" data-page="panduan"><span>ⓘ</span> Panduan penggunaan</button>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="local-pill"><span class="dot"></span> Penyimpanan lokal aktif</div>
+      <p>Prototype akademik<br>Versi 1.0.0</p>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">DIVISI PEMBUKUAN · PROTOTYPE</p>
+        <h1 id="pageTitle">Dashboard</h1>
+      </div>
+      <div class="top-actions">
+        <span class="mode-badge">DEMO MODE</span>
+        <button class="avatar" aria-label="Profil pengguna">P</button>
+      </div>
+    </header>
+
+    <section class="page active" id="page-dashboard">
+      <div class="welcome">
+        <div>
+          <p class="eyebrow light">RINGKASAN PEMERIKSAAN</p>
+          <h2>Kelola pemeriksaan bukti transfer dengan lebih terstruktur.</h2>
+          <p>Unggah bukti, baca informasi transaksi, lalu bandingkan dengan riwayat yang telah disimpan.</p>
+          <button class="btn btn-white" data-goto="pemeriksaan">+ Mulai pemeriksaan</button>
+        </div>
+        <div class="welcome-art" aria-hidden="true">
+          <div class="art-sheet sheet-back"></div><div class="art-sheet sheet-front"><div class="art-line"></div><div class="art-line short"></div><div class="art-check">✓</div><div class="art-line"></div><div class="art-line mid"></div></div>
+        </div>
+      </div>
+
+      <div class="section-heading"><div><h2>Ringkasan data</h2><p>Jumlah berdasarkan riwayat yang tersimpan di browser ini.</p></div><span class="live-label"><span class="dot"></span> Diperbarui otomatis</span></div>
+      <div class="stats-grid">
+        <article class="stat-card"><div class="stat-top"><span>Total bukti tersimpan</span><span class="stat-icon blue">▤</span></div><strong id="statTotal">0</strong><small>Seluruh catatan riwayat</small></article>
+        <article class="stat-card"><div class="stat-top"><span>Indikasi duplikasi kuat</span><span class="stat-icon red">↗</span></div><strong id="statStrong">0</strong><small>Nomor referensi sama</small></article>
+        <article class="stat-card"><div class="stat-top"><span>Data transaksi cocok</span><span class="stat-icon amber">≋</span></div><strong id="statMatch">0</strong><small>Kombinasi data serupa</small></article>
+        <article class="stat-card"><div class="stat-top"><span>Data belum lengkap</span><span class="stat-icon gray">!</span></div><strong id="statIncomplete">0</strong><small>Butuh pelengkapan data</small></article>
+      </div>
+
+      <div class="content-grid">
+        <section class="panel">
+          <div class="panel-heading"><div><h3>Aktivitas terbaru</h3><p>Catatan pemeriksaan terakhir</p></div><button class="text-btn" data-goto="riwayat">Lihat semua →</button></div>
+          <div id="recentList" class="recent-list"></div>
+        </section>
+        <section class="panel quick-panel">
+          <div class="panel-heading"><div><h3>Akses cepat</h3><p>Pilih tindakan yang ingin dilakukan</p></div></div>
+          <button class="quick-action" data-goto="pemeriksaan"><span class="quick-icon blue">＋</span><span><strong>Periksa bukti baru</strong><small>Unggah satu atau beberapa gambar</small></span><b>→</b></button>
+          <button class="quick-action" data-goto="riwayat"><span class="quick-icon purple">◷</span><span><strong>Buka riwayat</strong><small>Cari dan tinjau catatan sebelumnya</small></span><b>→</b></button>
+          <div class="info-note"><strong>Catatan prototype</strong><p>Data hanya tersimpan di browser dan perangkat ini. Tidak ada sinkronisasi antarperangkat.</p></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="page" id="page-pemeriksaan">
+      <div class="page-intro"><div><p class="eyebrow">PROSES PEMERIKSAAN</p><h2>Unggah dan periksa bukti transfer</h2><p>Hasil OCR dapat keliru. Tinjau dan koreksi data sebelum menyimpan.</p></div></div>
+      <section class="panel upload-panel">
+        <div class="step-heading"><span class="step-number">01</span><div><h3>Pilih gambar bukti transfer</h3><p>Format JPG, PNG, atau WebP. Untuk hasil lebih baik, gunakan gambar jelas dan tidak terpotong.</p></div></div>
+        <label class="dropzone" id="dropzone" for="fileInput">
+          <div class="upload-icon">↑</div><strong>Tarik gambar ke area ini atau klik untuk memilih</strong><span>Unggah beberapa gambar sekaligus · Maks. 12 gambar per batch</span>
+          <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple>
+        </label>
+        <div class="selected-files" id="selectedFiles"></div>
+        <div class="upload-footer"><span class="muted" id="fileSummary">Belum ada gambar dipilih.</span><button class="btn btn-primary" id="startOcr" disabled>Mulai ekstraksi OCR <span>→</span></button></div>
+        <div class="progress-wrap hidden" id="progressWrap"><div class="progress-label"><span id="progressText">Menyiapkan OCR...</span><span id="progressPercent">0%</span></div><div class="progress-track"><div id="progressBar"></div></div></div>
+      </section>
+
+      <section class="panel hidden" id="resultsPanel">
+        <div class="panel-heading"><div><h3>02 · Tinjau hasil ekstraksi</h3><p>Periksa setiap kolom. Data hasil OCR tidak dianggap pasti sebelum diverifikasi.</p></div><span id="resultCount" class="count-pill">0 hasil</span></div>
+        <div id="resultsList" class="results-list"></div>
+        <div class="save-bar"><div><strong>Sudah meninjau hasil?</strong><p>Data akan dibandingkan ulang sebelum masuk ke riwayat.</p></div><button class="btn btn-primary" id="saveResults">Simpan hasil pemeriksaan</button></div>
+      </section>
+      <div class="disclaimer"><strong>Informasi penting:</strong> OCR membaca teks dari gambar, bukan memvalidasi transaksi bank. Hasil kecocokan adalah indikator untuk membantu pemeriksaan manual, bukan bukti pasti bahwa transaksi duplikat.</div>
+    </section>
+
+    <section class="page" id="page-riwayat">
+      <div class="page-intro"><div><p class="eyebrow">ARSIP LOKAL</p><h2>Riwayat pemeriksaan</h2><p>Telusuri hasil sebelumnya dan ekspor catatan ke CSV.</p></div><button class="btn btn-outline" id="exportCsv">↓ Ekspor CSV</button></div>
+      <section class="panel">
+        <div class="filters">
+          <div class="search-box"><span>⌕</span><input id="historySearch" type="search" placeholder="Cari nama file, bank, nominal, referensi..."></div>
+          <select id="statusFilter" aria-label="Filter status"><option value="">Semua status</option><option value="strong">Indikasi duplikasi kuat</option><option value="match">Data transaksi cocok</option><option value="clear">Tidak ditemukan kecocokan</option><option value="incomplete">Data belum lengkap</option></select>
+          <button class="btn btn-outline" id="clearFilters">Reset filter</button>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Bukti / waktu simpan</th><th>Tanggal transaksi</th><th>Bank penerima</th><th>Nominal</th><th>Nomor referensi</th><th>Status</th><th></th></tr></thead><tbody id="historyBody"></tbody></table></div>
+        <div class="empty-state hidden" id="historyEmpty"><div>▤</div><strong>Belum ada data yang cocok</strong><p>Ubah kata kunci atau lakukan pemeriksaan bukti transfer terlebih dahulu.</p></div>
+        <div class="table-footer"><span id="historyCount">0 catatan</span><button class="text-btn danger-text" id="clearHistory">Hapus seluruh riwayat lokal</button></div>
+      </section>
+      <div class="disclaimer"><strong>Privasi:</strong> jangan gunakan bukti transfer asli atau informasi keuangan perusahaan pada demo yang dapat diakses publik. Gunakan data dummy untuk pengujian.</div>
+    </section>
+
+    <section class="page" id="page-panduan">
+      <div class="page-intro"><div><p class="eyebrow">PANDUAN</p><h2>Cara menggunakan prototype</h2><p>Ringkasan alur dan cara membaca hasil pemeriksaan.</p></div></div>
+      <div class="guide-grid">
+        <article class="panel guide-card"><span class="guide-number">01</span><h3>Unggah gambar</h3><p>Pilih satu atau beberapa bukti transfer. Gambar diproses secara lokal oleh browser menggunakan library OCR eksternal.</p></article>
+        <article class="panel guide-card"><span class="guide-number">02</span><h3>Tinjau data OCR</h3><p>Periksa tanggal, bank penerima, nominal, nomor referensi, dan waktu. Bank pengirim ditampilkan terpisah jika terdeteksi.</p></article>
+        <article class="panel guide-card"><span class="guide-number">03</span><h3>Baca alasan kecocokan</h3><p>Sistem menampilkan aturan yang cocok, misalnya nomor referensi sama atau kombinasi tanggal, nominal, bank, dan waktu.</p></article>
+        <article class="panel guide-card"><span class="guide-number">04</span><h3>Simpan dan ekspor</h3><p>Simpan hasil ke riwayat lokal. Ekspor CSV dapat dibuka melalui aplikasi spreadsheet seperti Microsoft Excel.</p></article>
+      </div>
+      <section class="panel">
+        <h3>Arti status pemeriksaan</h3>
+        <div class="status-guide"><span class="status status-strong">Indikasi duplikasi kuat</span><p>Nomor referensi yang terbaca sama dengan catatan sebelumnya. Verifikasi tanggal, nominal, dan bukti asli.</p></div>
+        <div class="status-guide"><span class="status status-match">Data transaksi cocok</span><p>Nomor referensi tidak tersedia atau berbeda, tetapi kombinasi data penting cocok. Perlu tinjauan manual.</p></div>
+        <div class="status-guide"><span class="status status-clear">Tidak ditemukan kecocokan</span><p>Data cukup untuk dibandingkan, tetapi tidak ada catatan sebelumnya yang memenuhi aturan pencocokan.</p></div>
+        <div class="status-guide"><span class="status status-incomplete">Data belum lengkap</span><p>Informasi wajib untuk pencocokan belum tersedia. Lengkapi data yang terbaca atau periksa gambar secara manual.</p></div>
+      </section>
+      <section class="panel"><h3>Batasan teknis</h3><ul class="limitations"><li>OCR dapat salah membaca karakter, nominal, tanggal, dan nomor referensi.</li><li>Label dan susunan bukti dari tiap bank berbeda. Ekstraksi otomatis bersifat perkiraan dan harus diuji menggunakan sampel representatif.</li><li>Bank pengirim dan bank penerima hanya diisi jika pola teks yang dikenali mendukungnya. Jangan menganggap bank penerbit bukti selalu sama dengan bank penerima.</li><li>Riwayat disimpan dalam localStorage browser, sehingga dapat hilang saat data situs dihapus dan tidak tersedia lintas perangkat.</li><li>GitHub Pages hanya menyajikan file statis; prototype ini tidak terhubung ke sistem internal perusahaan atau database bersama.</li></ul></section>
+    </section>
+
+    <footer class="footer"><span>TransferCheck · Prototype pemeriksaan bukti transfer</span><span>Data disimpan di browser ini</span></footer>
+  </main>
+
+  <dialog id="detailDialog" class="detail-dialog">
+    <div class="dialog-head"><div><p class="eyebrow">DETAIL CATATAN</p><h2 id="detailTitle">Detail pemeriksaan</h2></div><button class="icon-button" id="closeDialog" aria-label="Tutup">×</button></div>
+    <div id="detailContent"></div>
+  </dialog>
+  <div class="toast hidden" id="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>
